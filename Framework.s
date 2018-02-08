@@ -15,8 +15,21 @@ twentytwo EQU 0x00400000 ; 1 << 22
 
 __main
 	; Your code goes here!
-		
+	
 		BL    LEDSETUP
+		
+		MOV   R6, R0    ; R6 is # of dots
+		CMP   R0, #6
+		BMI   dashes	; branch if neg 
+						; Between 0 and 5
+		
+		
+		
+		dashes:			; Greater than 5
+		
+		
+		
+		
 		BL    LEDON
 		B     forever
 
