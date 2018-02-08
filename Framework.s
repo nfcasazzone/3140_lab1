@@ -18,14 +18,33 @@ __main
 	
 		BL    LEDSETUP
 		
-		MOV   R6, R0    ; R6 is # of dots
+		MOV   R6, R0  
+		MOV	  R7, #5	; R7 is max dots/dashes
 		CMP   R0, #6
 		BMI   dashes	; branch if neg 
 						; Between 0 and 5
-		
-		
-		
-		dashes:			; Greater than 5
+		MOV	  R5, R0    ; R5 is # of dots	
+
+		beginning:
+
+			LDR   R1, #3	; Decide delay counter R1
+			B	  delay
+				
+				
+			dashes:			; Greater than 5
+			SUB   R6,R0,#5  ; R6 is # of dashes
+				
+				
+				
+				
+				
+			delay:
+			loop		
+				SUBS R1, #1
+				BNE loop
+			SUBS R7, #1	
+			BNE   beginning
+					
 		
 		
 		
