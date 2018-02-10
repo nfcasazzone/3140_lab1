@@ -15,42 +15,72 @@ twentytwo EQU 0x00400000 ; 1 << 22
 
 __main
 	; Your code goes here!
-	
-		BL    LEDSETUP
+		BL  LEDSETUP
+		BL LEDOFF
+		MOV R0, #8 ;n	
+		B Morsedigit
+Morsedigit
+		LDR R2, = 3000000 ;dot delay time
+		LDR R3, = 9000000 ;dash delay time
+		CMP  R0, #6
+		BPL dash
+		CMP R0, #0
+		BEQ dash
+		;r0 holds number of dots
+		RSB R1, R0, #5 ;r1 holds the number of dashes
+dot	
+		BL dotstart
+		CMP R1, #0
+		BEQ forever
+		BL dashestart
+		B forever
+dash
+		BL dashestart
+		CMP R0, #0
+		BEQ forever
+		BL dotstart
+		B forever
 		
-		MOV   R6, R0  
-		MOV	  R7, #5	; R7 is max dots/dashes
-		CMP   R0, #6
-		BMI   dashes	; branch if neg 
-						; Between 0 and 5
-		MOV	  R5, R0    ; R5 is # of dots	
+dotstart ;push LR onto stack so we can return back to dot
+		push {LR}
+		RSB R1, R0, #5
+dotsoff ;turn off LED for required time
+		BL delay
+		BL LEDON
+dotsloop ;turn on LED for required time
+		BL delay
+		SUB R0, #1
+		CMP R0, #0
+		BL LEDOFF
+		BNE dotsoff
+		pop {LR}
+		BX LR
+		
+dashestart ;same as dots but for dashes
+		push {LR}
+		SUB R1, R0, #5
+		RSB R0, R1, #5
+		MOVEQ R1, #5
+		MOVEQ R0, #0
+dashesoff
+		BL delay
+		BL LEDON
+dashesloop
+		LDR R2, =9000000
+		BL delay
+		SUB R1, #1
+		CMP R1, #0
+		BL LEDOFF
+		BNE dashesoff
+		pop {LR}
+		BX LR
+		
+delay ;loop for LED off time
+		SUBS R2, #1
+		BNE delay
+		LDR R2, =3000000
+		BX LR
 
-		beginning:
-
-			LDR   R1, #3	; Decide delay counter R1
-			B	  delay
-				
-				
-			dashes:			; Greater than 5
-			SUB   R6,R0,#5  ; R6 is # of dashes
-				
-				
-				
-				
-				
-			delay:
-			loop		
-				SUBS R1, #1
-				BNE loop
-			SUBS R7, #1	
-			BNE   beginning
-					
-		
-		
-		
-		
-		BL    LEDON
-		B     forever
 
 fib		
 	; Your code goes here!
