@@ -1,4 +1,4 @@
-		AREA Myprog, CODE, READONLY
+	AREA Myprog, CODE, READONLY
 		ENTRY
 		EXPORT __main
 			
@@ -16,12 +16,13 @@ twentytwo EQU 0x00400000 ; 1 << 22
 __main
 	; Your code goes here!
 		BL  LEDSETUP
-		BL LEDOFF
-		MOV R0, #8 ;n	
+		BL LEDOFF	
+		MOV R0, #2 ;n
+		MOV R3, #0
+		BL fib
 		B Morsedigit
 Morsedigit
-		LDR R2, = 3000000 ;dot delay time
-		LDR R3, = 9000000 ;dash delay time
+		MOV R2, #3 ;dot delay time
 		CMP  R0, #6
 		BPL dash
 		CMP R0, #0
@@ -43,7 +44,7 @@ dash
 		
 dotstart ;push LR onto stack so we can return back to dot
 		push {LR}
-		RSB R1, R0, #5
+		
 dotsoff ;turn off LED for required time
 		BL delay
 		BL LEDON
@@ -66,7 +67,7 @@ dashesoff
 		BL delay
 		BL LEDON
 dashesloop
-		LDR R2, =9000000
+		MOV R2, #9
 		BL delay
 		SUB R1, #1
 		CMP R1, #0
@@ -78,14 +79,31 @@ dashesloop
 delay ;loop for LED off time
 		SUBS R2, #1
 		BNE delay
-		LDR R2, =3000000
+		MOV R2, #3
 		BX LR
 
 
 fib		
-	; Your code goes here!
-
-; Call this function first to set up the LED
+	CMP R0, #0
+	BEQ zero
+	CMP R0, #1
+	BEQ one
+	push {R4, LR}
+	MOV R4, R0
+	SUB R0, R0, #1
+	BL fib
+	SUB R0, R0, #1
+	BL fib
+	SUB R0, R4, #2
+	BL fib
+	pop {R4, LR}
+	BX LR
+zero 
+	BX LR
+one
+    ADD R3, R3, #1
+	BX LR
+	; Call this function first to set up the LED
 LEDSETUP
 				PUSH  {R4, R5} ; To preserve R4 and R5
 				LDR   R4, =ten ; Load the value 1 << 10
@@ -121,4 +139,3 @@ LEDOFF
 forever
 			B		forever						; wait here forever	
 			END
- 				
