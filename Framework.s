@@ -15,93 +15,242 @@ twentytwo EQU 0x00400000 ; 1 << 22
 
 __main
 	; Your code goes here!
-		BL  LEDSETUP
-		BL LEDOFF	
-		MOV R0, #2 ;n
-		MOV R3, #0
-		BL fib
-		B Morsedigit
-Morsedigit
-		MOV R2, #3 ;dot delay time
-		CMP  R0, #6
-		BPL dash
-		CMP R0, #0
-		BEQ dash
-		;r0 holds number of dots
-		RSB R1, R0, #5 ;r1 holds the number of dashes
-dot	
-		BL dotstart
-		CMP R1, #0
-		BEQ forever
-		BL dashestart
-		B forever
-dash
-		BL dashestart
-		CMP R0, #0
-		BEQ forever
-		BL dotstart
-		B forever
-		
-dotstart ;push LR onto stack so we can return back to dot
-		push {LR}
-		
-dotsoff ;turn off LED for required time
-		BL delay
-		BL LEDON
-dotsloop ;turn on LED for required time
-		BL delay
-		SUB R0, #1
-		CMP R0, #0
-		BL LEDOFF
-		BNE dotsoff
-		pop {LR}
-		BX LR
-		
-dashestart ;same as dots but for dashes
-		push {LR}
-		SUB R1, R0, #5
-		RSB R0, R1, #5
-		MOVEQ R1, #5
-		MOVEQ R0, #0
-dashesoff
-		BL delay
-		BL LEDON
-dashesloop
-		MOV R2, #9
-		BL delay
-		SUB R1, #1
-		CMP R1, #0
-		BL LEDOFF
-		BNE dashesoff
-		pop {LR}
-		BX LR
-		
-delay ;loop for LED off time
-		SUBS R2, #1
-		BNE delay
-		MOV R2, #3
-		BX LR
-
-
-fib		
+	BL  LEDSETUP
+	BL LEDOFF	
+	MOV R0, #7
+	BL fib
+	BL MorseDigit
+	;BL extracredit uncomment this to test R0 values greater than 6 when using fib
+	B forever
+MorseDigit	
+	push {LR}	
 	CMP R0, #0
-	BEQ zero
+	BEQ Morse0
 	CMP R0, #1
-	BEQ one
-	push {R4, LR}
+	BEQ Morse1
+	CMP R0, #2
+	BEQ Morse2
+	CMP R0, #3
+	BEQ Morse3
+	CMP R0, #4
+	BEQ Morse4
+	CMP R0, #5
+	BEQ Morse5
+	CMP R0, #6
+	BEQ Morse6
+	CMP R0, #7
+	BEQ Morse7
+	CMP R0, #8
+	BEQ Morse8
+	CMP R0, #9
+	BEQ Morse9
+Morse0
+	BL Morse0loop
+	pop {LR}
+	BX LR
+Morse1
+	BL Morse1loop
+	pop {LR}
+	BX LR
+Morse2
+	BL Morse2loop
+	pop {LR}
+	BX LR
+Morse3
+	BL Morse3loop
+	pop {LR}
+	BX LR
+Morse4
+	BL Morse4loop
+	pop {LR}
+	BX LR
+Morse5
+	BL Morse5loop
+	pop {LR}
+	BX LR
+Morse6
+	BL Morse6loop
+	pop {LR}
+	BX LR
+Morse7
+	BL Morse7loop
+	pop {LR}
+	BX LR
+Morse8
+	BL Morse8loop
+	pop {LR}
+	BX LR
+Morse9
+	BL Morse9loop
+	pop {LR}
+	BX LR
+Morse0loop
+	push {LR}
+	BL dash
+	BL dash
+	BL dash
+	BL dash
+	BL dash
+	pop {LR}
+	BX LR
+Morse1loop
+	push {LR}
+	BL dot
+	BL dash
+	BL dash
+	BL dash
+	BL dash
+	pop {LR}
+	BX LR
+Morse2loop
+	push {LR}
+	BL dot
+	BL dot
+	BL dash
+	BL dash
+	BL dash
+	pop {LR}
+	BX LR
+Morse3loop
+	push {LR}
+	BL dot
+	BL dot
+	BL dot
+	BL dash
+	BL dash
+	pop {LR}
+	BX LR
+Morse4loop
+	push {LR}
+	BL dot
+	BL dot
+	BL dot
+	BL dot
+	BL dash
+	pop {LR}
+	BX LR
+Morse5loop
+	push {LR}
+	BL dot
+	BL dot
+	BL dot
+	BL dot
+	BL dot
+	pop {LR}
+	BX LR
+Morse6loop
+	push {LR}
+	BL dash
+	BL dot
+	BL dot
+	BL dot
+	BL dot
+	BL dot
+	pop {LR}
+	BX LR
+Morse7loop
+	push {LR}
+	BL dash
+	BL dash
+	BL dot
+	BL dot
+	BL dot
+	pop {LR}
+	BX LR
+Morse8loop
+	push {LR}
+	BL dash
+	BL dash
+	BL dash
+	BL dot
+	BL dot
+	pop {LR}
+	BX LR
+Morse9loop
+	push {LR}
+	BL dash
+	BL dash
+	BL dash
+	BL dash
+	BL dot
+	pop {LR}
+	BX LR
+dot
+	push {LR}
+	BL delay
+	BL LEDON
+	BL delay
+	BL LEDOFF
+	pop {LR}
+	BX LR
+
+dash
+	push {LR}
+	BL delay
+	BL LEDON
+	BL delay
+	BL delay
+	BL delay
+	BL LEDOFF
+	pop {LR}
+	BX LR
+delay
+	push {R4}
+	LDR R4, =3000000
+delayloop
+	SUBS R4, #1
+	BNE delayloop
+	pop {R4}
+	BX LR
+fib		
+	;CMP R0, #0
+	;BEQ basezero
+	;BMI basezero
+	CMP R0, #1
+	BMI basezero
+	BEQ baseone
+	push {R4,R5, LR}
 	MOV R4, R0
-	SUB R0, R0, #1
+	SUB R0, R4, #1
 	BL fib
-	SUB R0, R0, #1
-	BL fib
+	MOV R5, R0
 	SUB R0, R4, #2
-	BL fib
-	pop {R4, LR}
+	BL fib 
+	ADD R5, R5, R0
+	MOV R0, R5
+	pop {R4, R5,LR}
 	BX LR
-zero 
+basezero
+	MOV R0, #0
 	BX LR
-one
-    ADD R3, R3, #1
+baseone
+    MOV R0, #1
+	BX LR
+extracredit
+	push {R6, R7, R8, LR}
+	MOV R6, R0
+	MOV R7, #0
+	MOV R8, #10
+MorseDigitStackSetup ;R0 is the input
+	MOV R6, R0
+	UDIV R6, R6, R8
+	MUL R6, R6, R8
+	SUB R6, R0, R6
+	push {R6}
+	ADD R7, #1
+	UDIV R0, R0, R8
+	CMP R0, #0
+	BNE MorseDigitStackSetup
+StackLoop
+	pop {R0}
+	BL MorseDigit
+	BL delay
+	BL delay
+	BL delay
+	SUB R7, #1
+	CMP R7, #0
+	BNE StackLoop
+	pop {R6, R7, R8, LR}
 	BX LR
 	; Call this function first to set up the LED
 LEDSETUP
