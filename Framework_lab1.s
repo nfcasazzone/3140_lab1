@@ -1,4 +1,4 @@
-				AREA Myprog, CODE, READONLY
+	AREA Myprog, CODE, READONLY
 		ENTRY
 		EXPORT __main
 			
@@ -17,13 +17,13 @@ __main
 	; Your code goes here!
 		BL  LEDSETUP
 		BL LEDOFF	
-		MOV R0, #2 ;n
-		MOV R5, R0
-		MOV R0, #0
+		MOV R0, #3 ;n
+		MOV R3, #0
 		BL fib
+		MOV R0, R3
 		B Morsedigit
 Morsedigit
-		MOV R2, #3 ;dot delay time
+		LDR R2, =3000000 ;dot delay time
 		CMP  R0, #6
 		BPL dash
 		CMP R0, #0
@@ -37,6 +37,10 @@ dot
 		BL dashestart
 		B forever
 dash
+		SUB R1, R0, #5
+		RSB R0, R1, #5
+		MOVEQ R1, #5
+		MOVEQ R0, #0
 		BL dashestart
 		CMP R0, #0
 		BEQ forever
@@ -45,7 +49,7 @@ dash
 		
 dotstart ;push LR onto stack so we can return back to dot
 		push {LR}
-		
+		RSB R1, R0, #5
 dotsoff ;turn off LED for required time
 		BL delay
 		BL LEDON
@@ -60,15 +64,11 @@ dotsloop ;turn on LED for required time
 		
 dashestart ;same as dots but for dashes
 		push {LR}
-		SUB R1, R0, #5
-		RSB R0, R1, #5
-		MOVEQ R1, #5
-		MOVEQ R0, #0
 dashesoff
 		BL delay
 		BL LEDON
 dashesloop
-		MOV R2, #9
+		LDR R2, =9000000
 		BL delay
 		SUB R1, #1
 		CMP R1, #0
@@ -80,35 +80,29 @@ dashesloop
 delay ;loop for LED off time
 		SUBS R2, #1
 		BNE delay
-		MOV R2, #3
+		LDR R2, =3000000
 		BX LR
 
 
 fib		
-		push {LR}
-fib2
-		CMP R5, #0
-		MOVEQ PC, LR
-		CMP R5, #1
-		ADDEQ R0, #1
-		MOVEQ PC, LR
-		BL minus1
-		BL minus2
-		pop {LR}
-		BX LR
-		; Your code goes here!
-minus1
-		push {R5, LR}
-		SUB R5, #1
-		BL fib2
-		pop {LR, R5}
-		BX LR
-minus2
-		push {R5, LR}
-		SUB R5, #2
-		BL fib2
-		pop {LR, R5}
-		BX LR
+	CMP R0, #0
+	BEQ zero
+	CMP R0, #1
+	BEQ one
+	push {R4, LR}
+	MOV R4, R0
+	SUB R0, R0, #1
+	BL fib
+	SUB R0, R4, #2
+	BL fib
+	pop {R4, LR}
+	BX LR
+zero 
+	MOV R0, #0
+	BX LR
+one
+    MOV R0, #1
+	BX LR
 	; Call this function first to set up the LED
 LEDSETUP
 				PUSH  {R4, R5} ; To preserve R4 and R5
@@ -145,4 +139,3 @@ LEDOFF
 forever
 			B		forever						; wait here forever	
 			END
- 				
