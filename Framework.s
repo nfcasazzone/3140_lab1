@@ -17,11 +17,39 @@ __main
 	; Your code goes here!
 	BL  LEDSETUP	; Set up LED
 	BL LEDOFF		; Turn of LED
-	MOV R0, #6	; Change IMM to perform Morse/Fib on it
-	BL fib			; Call Fibonacci function
-	BL MorseDigit	; Call MorseCode function
-	;BL extracredit ;uncomment this to test R0 values greater than 6 when using fib
+	
+	MOV R0, #0	; Change R0 to 0 to test MorseDigit(0)
+	BL MorseDigit	; Call MorseDigit(0)
+	
+	MOV R0, #1	; Change R0 to 1 to test MorseDigit(1)
+	BL MorseDigit	; Call MorseDigit(1)
+	
+	MOV R0, #2	; Change R0 to 2 to test MorseDigit(2)
+	BL MorseDigit	; Call MorseDigit(2)
+	
+	MOV R0, #3	; Change R0 to 3 to test MorseDigit(3)
+	BL MorseDigit	; Call MorseDigit(3)
+	
+	MOV R0, #4	; Change R0 to 4 to test MorseDigit(4)
+	BL MorseDigit	; Call MorseDigit(4)
+	
+	MOV R0, #5	; Change R0 to 5 to test MorseDigit(5)
+	BL MorseDigit	; Call MorseDigit(5)
+	
+	MOV R0, #6	; Change R0 to 6 to test MorseDigit(6)
+	BL MorseDigit	; Call MorseDigit(6)
+	
+	MOV R0, #7	; Change R0 to 7 to test MorseDigit(7)
+	BL MorseDigit	; Call MorseDigit(7)
+	
+	MOV R0, #8	; Change R0 to 8 to test MorseDigit(8)
+	BL MorseDigit	; Call MorseDigit(8)
+	
+	MOV R0, #9	; Change R0 to 9 to test MorseDigit(9)
+	BL MorseDigit	; Call MorseDigit(9)
+	
 	B forever		; Keep LEDs off when done
+;The MorseDigit function takes in an input in R0 and flashes the appropriate dots and dashes onto the LED
 MorseDigit	
 	push {LR}		; Save LR before function call
 	CMP R0, #0		; Check if n is 0 and branch to the respective loop
@@ -44,17 +72,16 @@ MorseDigit
 	BEQ Morse8
 	CMP R0, #9	    ; Check for 9
 	BEQ Morse9
-
+;All these loops branch to a combination of dash or dot 5 times and then branch to MorseFinish, the end. 
 Morse0	;0 digit loop to call the dashes needed
-	;Save LR before the call
 	BL dash		;Branch to delay loop for a dash
 	BL dash
 	BL dash
 	BL dash
 	BL dash
-	B MorseFinish
+	B MorseFinish ;Branch to the finish
 Morse1	;1 single digit loop to call the dots/dashes needed
-	BL dot
+	BL dot ;Branch to delay loop for a dash
 	BL dash
 	BL dash
 	BL dash
@@ -118,14 +145,15 @@ Morse9		;9 single digit loop to call the dots/dashes needed
 	BL dot
 	B MorseFinish
 MorseFinish
-	pop {LR}
-	BX LR
+	pop {LR} ;pop LR so the function can return to main
+	BX LR    ;end the function and branch back to main
+	
 dot				;Delay loop for a dot
 	push {LR}	;Save previous LR before call
 	BL delay	;Branch to timing delay loop to signal a space (LED off)
 	BL LEDON
 	BL delay	;Branch to timing delay loop to signal a dot (LED on)
-	BL LEDOFF
+	BL LEDOFF	;turn off the LED
 	pop {LR}	;Remove previous LR from stack
 	BX LR		;Return to previously saved LR before function call
 
@@ -139,6 +167,7 @@ dash			;Delay loop for a dash
 	BL LEDOFF
 	pop {LR}	;Remove previous LR from stack
 	BX LR		;Return to previously saved LR before function call
+	
 delay			;Branch that sets delay time
 	push {R4}	;Save previous R4 reg before call
 	LDR R4, =3000000	;Load delay time
@@ -147,53 +176,54 @@ delayloop		;Branch that counts down from delay time to delay
 	BNE delayloop
 	pop {R4}
 	BX LR
+	
 fib				;Fibonacci function branch that returns the fib(R0)
 	CMP R0, #1	;Compare R0 to 1 to see if branching to base case is needed
-	BMI basezero 
-	BEQ baseone
-	push {R4, R5, LR}
-	MOV R4, R0
-	SUB R0, R4, #1
-	BL fib
-	MOV R5, R0
+	BMI basezero ;if R0<=0, branch to base zero case
+	BEQ baseone ; if R0=1, branch to base 1 case
+	push {R4, R5, LR} ;else case: save R4, R5, and LR before next function call
+	MOV R4, R0 ;save original value of n
+	SUB R0, R4, #1 
+	BL fib  ;call fib(n-1)
+	MOV R5, R0 ;save result of fib(n-1) into R5
 	SUB R0, R4, #2
-	BL fib 
-	ADD R5, R5, R0
-	MOV R0, R5
-	pop {R4,R5, LR}
+	BL fib  ;call fib(n-2_
+	ADD R5, R5, R0 ;add result of fib(n-2) to R5
+	MOV R0, R5 ;R0 holds fib(n-1)+fib(n-2)
+	pop {R4,R5, LR} ;pop R4, R5, and LR to safely return to address before fib call
 	BX LR
-basezero
+basezero ;returns zero
 	MOV R0, #0
 	BX LR
-baseone
+baseone ;returns one
     MOV R0, #1
 	BX LR
-extracredit
-	push {R6, R7, R8, LR}
-	MOV R6, R0
-	MOV R7, #0
+	
+extracredit ;R0 is the input, this function handles splitting multi-digit numbers and pushing onto the stack for MorseDigit
+	push {R6, R7, R8, LR} ;saves the values of the registers that will be used
+	MOV R7, #0 ;R7 will hold the number of digits of R0
 	MOV R8, #10
-MorseDigitStackSetup ;R0 is the input
-	MOV R6, R0
-	UDIV R6, R6, R8
-	MUL R6, R6, R8
-	SUB R6, R0, R6
-	push {R6}
-	ADD R7, #1
-	UDIV R0, R0, R8
+MorseDigitStackSetup ;this part essentially performs mod 10 on R0 contiously until R0=0 and pushes the result each time onto the stack. 
+	MOV R6, R0 ;moves R0 to R6 to perform calculations
+	UDIV R6, R6, R8  ;performs unsigned integer division of R6 by 10
+	MUL R6, R6, R8   ;multiplies R6 by 10
+	SUB R6, R0, R6   ;R6 now holds R0 mod 10.
+	push {R6} ;push this result onto the stack
+	ADD R7, #1 
+	UDIV R0, R0, R8 ;R0 is divided by 10 before looping again as long as R0 !=0
 	CMP R0, #0
 	BNE MorseDigitStackSetup
 StackLoop
-	pop {R0}
-	BL MorseDigit
+	pop {R0} ;this pops the most significant digit of the original input R0 of extracredit(n) to R0
+	BL MorseDigit ;MorseDigit is called on this value of R0
+	BL delay ;there is a 3 dot delay before the next digit is dislpayed
 	BL delay
 	BL delay
-	BL delay
-	SUB R7, #1
+	SUB R7, #1 ;checks if there are more digits to display
 	CMP R7, #0
 	BNE StackLoop
-	pop {R6, R7, R8, LR}
-	BX LR
+	pop {R6, R7, R8, LR} ;restores the original values of the registers used in this function
+	BX LR ;branches back to LR
 	; Call this function first to set up the LED
 LEDSETUP
 				PUSH  {R4, R5} ; To preserve R4 and R5
