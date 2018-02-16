@@ -15,201 +15,143 @@ twentytwo EQU 0x00400000 ; 1 << 22
 
 __main
 	; Your code goes here!
-	BL  LEDSETUP
-	BL LEDOFF	
-	MOV R0, #7
-	BL fib
-	BL MorseDigit
-	;BL extracredit uncomment this to test R0 values greater than 6 when using fib
-	B forever
+	BL  LEDSETUP	; Set up LED
+	BL LEDOFF		; Turn of LED
+	MOV R0, #6	; Change IMM to perform Morse/Fib on it
+	BL fib			; Call Fibonacci function
+	BL MorseDigit	; Call MorseCode function
+	;BL extracredit ;uncomment this to test R0 values greater than 6 when using fib
+	B forever		; Keep LEDs off when done
 MorseDigit	
-	push {LR}	
-	CMP R0, #0
+	push {LR}		; Save LR before function call
+	CMP R0, #0		; Check if n is 0 and branch to the respective loop
 	BEQ Morse0
-	CMP R0, #1
+	CMP R0, #1		; Check for 1
 	BEQ Morse1
-	CMP R0, #2
+	CMP R0, #2		; Check for 2
 	BEQ Morse2
-	CMP R0, #3
+	CMP R0, #3	    ; Check for 3
 	BEQ Morse3
-	CMP R0, #4
+	CMP R0, #4	    ; Check for 4
 	BEQ Morse4
-	CMP R0, #5
+	CMP R0, #5	    ; Check for 5
 	BEQ Morse5
-	CMP R0, #6
+	CMP R0, #6	    ; Check for 6
 	BEQ Morse6
-	CMP R0, #7
+	CMP R0, #7	    ; Check for 7
 	BEQ Morse7
-	CMP R0, #8
+	CMP R0, #8	    ; Check for 8
 	BEQ Morse8
-	CMP R0, #9
+	CMP R0, #9	    ; Check for 9
 	BEQ Morse9
-Morse0
-	BL Morse0loop
-	pop {LR}
-	BX LR
-Morse1
-	BL Morse1loop
-	pop {LR}
-	BX LR
-Morse2
-	BL Morse2loop
-	pop {LR}
-	BX LR
-Morse3
-	BL Morse3loop
-	pop {LR}
-	BX LR
-Morse4
-	BL Morse4loop
-	pop {LR}
-	BX LR
-Morse5
-	BL Morse5loop
-	pop {LR}
-	BX LR
-Morse6
-	BL Morse6loop
-	pop {LR}
-	BX LR
-Morse7
-	BL Morse7loop
-	pop {LR}
-	BX LR
-Morse8
-	BL Morse8loop
-	pop {LR}
-	BX LR
-Morse9
-	BL Morse9loop
-	pop {LR}
-	BX LR
-Morse0loop
-	push {LR}
-	BL dash
-	BL dash
-	BL dash
-	BL dash
-	BL dash
-	pop {LR}
-	BX LR
-Morse1loop
-	push {LR}
-	BL dot
-	BL dash
-	BL dash
-	BL dash
-	BL dash
-	pop {LR}
-	BX LR
-Morse2loop
-	push {LR}
-	BL dot
-	BL dot
-	BL dash
-	BL dash
-	BL dash
-	pop {LR}
-	BX LR
-Morse3loop
-	push {LR}
-	BL dot
-	BL dot
-	BL dot
-	BL dash
-	BL dash
-	pop {LR}
-	BX LR
-Morse4loop
-	push {LR}
-	BL dot
-	BL dot
-	BL dot
-	BL dot
-	BL dash
-	pop {LR}
-	BX LR
-Morse5loop
-	push {LR}
-	BL dot
-	BL dot
-	BL dot
-	BL dot
-	BL dot
-	pop {LR}
-	BX LR
-Morse6loop
-	push {LR}
-	BL dash
-	BL dot
-	BL dot
-	BL dot
-	BL dot
-	BL dot
-	pop {LR}
-	BX LR
-Morse7loop
-	push {LR}
-	BL dash
-	BL dash
-	BL dot
-	BL dot
-	BL dot
-	pop {LR}
-	BX LR
-Morse8loop
-	push {LR}
-	BL dash
-	BL dash
-	BL dash
-	BL dot
-	BL dot
-	pop {LR}
-	BX LR
-Morse9loop
-	push {LR}
-	BL dash
-	BL dash
-	BL dash
-	BL dash
-	BL dot
-	pop {LR}
-	BX LR
-dot
-	push {LR}
-	BL delay
-	BL LEDON
-	BL delay
-	BL LEDOFF
-	pop {LR}
-	BX LR
 
-dash
-	push {LR}
-	BL delay
-	BL LEDON
-	BL delay
-	BL delay
-	BL delay
-	BL LEDOFF
+Morse0	;0 digit loop to call the dashes needed
+	;Save LR before the call
+	BL dash		;Branch to delay loop for a dash
+	BL dash
+	BL dash
+	BL dash
+	BL dash
+	B MorseFinish
+Morse1	;1 single digit loop to call the dots/dashes needed
+	BL dot
+	BL dash
+	BL dash
+	BL dash
+	BL dash
+	B MorseFinish
+Morse2	;2 single digit loop to call the dots/dashes needed
+	BL dot
+	BL dot
+	BL dash
+	BL dash
+	BL dash
+	B MorseFinish
+Morse3		;3 single digit loop to call the dots/dashes needed
+	BL dot
+	BL dot
+	BL dot
+	BL dash
+	BL dash
+	B MorseFinish
+Morse4		;4 single digit loop to call the dots/dashes needed
+	BL dot
+	BL dot
+	BL dot
+	BL dot
+	BL dash
+	B MorseFinish
+Morse5		;5 single digit loop to call the dots/dashes needed
+	BL dot
+	BL dot
+	BL dot
+	BL dot
+	BL dot
+	B MorseFinish
+Morse6		;6 single digit loop to call the dots/dashes needed
+	BL dash
+	BL dot
+	BL dot
+	BL dot
+	BL dot
+	BL dot
+	B MorseFinish
+Morse7		;7 single digit loop to call the dots/dashes needed
+	BL dash
+	BL dash
+	BL dot
+	BL dot
+	BL dot
+	B MorseFinish
+Morse8		;8 single digit loop to call the dots/dashes needed
+	BL dash
+	BL dash
+	BL dash
+	BL dot
+	BL dot
+	B MorseFinish
+Morse9		;9 single digit loop to call the dots/dashes needed
+	BL dash
+	BL dash
+	BL dash
+	BL dash
+	BL dot
+	B MorseFinish
+MorseFinish
 	pop {LR}
 	BX LR
-delay
-	push {R4}
-	LDR R4, =3000000
-delayloop
-	SUBS R4, #1
+dot				;Delay loop for a dot
+	push {LR}	;Save previous LR before call
+	BL delay	;Branch to timing delay loop to signal a space (LED off)
+	BL LEDON
+	BL delay	;Branch to timing delay loop to signal a dot (LED on)
+	BL LEDOFF
+	pop {LR}	;Remove previous LR from stack
+	BX LR		;Return to previously saved LR before function call
+
+dash			;Delay loop for a dash
+	push {LR}	;Save previous LR before call
+	BL delay	;Branch to timing delay loop to signal a space (LED off)
+	BL LEDON
+	BL delay	;Branch to timing delay loop to signal a dot (LED on)
+	BL delay
+	BL delay	;Dash is 3x the length of a dot
+	BL LEDOFF
+	pop {LR}	;Remove previous LR from stack
+	BX LR		;Return to previously saved LR before function call
+delay			;Branch that sets delay time
+	push {R4}	;Save previous R4 reg before call
+	LDR R4, =3000000	;Load delay time
+delayloop		;Branch that counts down from delay time to delay
+	SUBS R4, #1	;
 	BNE delayloop
 	pop {R4}
 	BX LR
-fib		
-	;CMP R0, #0
-	;BEQ basezero
-	;BMI basezero
-	CMP R0, #1
-	BMI basezero
+fib				;Fibonacci function branch that returns the fib(R0)
+	CMP R0, #1	;Compare R0 to 1 to see if branching to base case is needed
+	BMI basezero 
 	BEQ baseone
-	push {R4,R5, LR}
+	push {R4, R5, LR}
 	MOV R4, R0
 	SUB R0, R4, #1
 	BL fib
@@ -218,7 +160,7 @@ fib
 	BL fib 
 	ADD R5, R5, R0
 	MOV R0, R5
-	pop {R4, R5,LR}
+	pop {R4,R5, LR}
 	BX LR
 basezero
 	MOV R0, #0
